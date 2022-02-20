@@ -7,7 +7,6 @@ const port = 'http://localhost:8000/static';
 const Files = require('../models/file.model');
 const {createFile} = require('../utils/create')
 const fs = require('fs');
-const bytesconv = require('../utils/bytesconv');
 
 
 router.post('/create/file',protect, async (req ,res)=>{
@@ -18,8 +17,7 @@ router.post('/create/file',protect, async (req ,res)=>{
            return res.status(200).json({status:"errpr",message:"Please send proper file name or path"});
         }
         const id = req.user._id;
-        let fipath = `${fpath}${fname}`;
-        filename = id+fipath;
+     
         if(fid=="null"){
             fid=id;
         }
@@ -59,7 +57,6 @@ router.post('/create/file',protect, async (req ,res)=>{
 
  router.post('/upload',protect,upload.array("files"), async (req ,res)=>{
     try{
-        console.log(req.body.fpath)
         res.status(200).json({status:"Success"});  
     }catch(err){
         console.log(err)
@@ -68,12 +65,22 @@ router.post('/create/file',protect, async (req ,res)=>{
  })
 
 
- router.get('/getFile',protect, async (req ,res)=>{
+ router.get('/getFile/:id',protect, async (req ,res)=>{
     try{
-        let {fpath}  = req.body;
-        const id = req.user._id;
-        let loc = `${port}/${id}/${fpath}`;
-        res.status(200).redirect(loc);  
+        const fid = req.params.id;
+        let checkFile = await Files.findById(fid)
+        if(!checkFile){
+            return res.status(400).json({status:"error",messages:"No file found"});  
+        
+        }
+        let path = paths.join(__dirname,`../files`)
+        fs.readdirSync(path).forEach((file)=>{
+            let fname = file.split('.')[0];
+            if(fname===fid){
+             let loc = `${port}/${file}`;
+             return res.status(200).redirect(loc);  
+            }
+        })
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
@@ -84,12 +91,8 @@ router.post('/create/file',protect, async (req ,res)=>{
     try{
         const id = req.params.id;
         let {newfold,folder=false} = req.body;
-        let update;
-        if(folder){
-             update = Files.updateOne({_id:id},{name:newname});
-        }else{
-             update = Folder.updateOne({_id:id},{name:newname});
-        }
+        let update = Files.updateOne({_id:id},{parentFolder:newfold});
+
         res.status(200).json({status:"Success",update});   
     }catch(err){
         console.log(err)

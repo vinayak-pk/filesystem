@@ -1,32 +1,17 @@
-const path = require('path');
+const paths = require('path');
 const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/authorize');
 const Folder = require('../models/folder.model');
 const Files = require('../models/file.model');
-// router.get('/',protect, async (req ,res)=>{
-//     try{
-//         const id = req.user._id;
-//         let loc = path.join(__dirname, `../files/${id}`)
-//         let files = getFile(loc);
-    
-//         res.status(200).json({status:"Success",files,path:"",parentfolder:null});
-//     }catch(err){
-//         console.log(err);
-//         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
-
-//     }
-   
-// })
-// console.log(getFile(path.join(__dirname, `../files`)));
+const bytesconv = require('../utils/bytesconv');
+const fs = require('fs');
 router.get('/searchfolder',protect, async (req ,res)=>{
     try{
         const id = req.user._id;
         let parentfolder= req.body.parent;
-        
-        console.log(id,parentfolder);
         if(parentfolder!=="null"){
-            let checkfod = await Folder.findById(parentfolder);
+            let checkfod = await Folder.findOne({userID:id,_id:parentfolder});
             if(!checkfod){
                 return res.status(400).json({status:"error",messages:"Folder/Directory does not exist"});
     
@@ -41,17 +26,20 @@ router.get('/searchfolder',protect, async (req ,res)=>{
                     path[i] = f.name;
                 }
                 fold.path=path.join('/');
+                fold.folder=true;
                 return fold;
         });
         folds = await Promise.all(folds)
         let files = await Files.find({userID:id,parentFolder:parentfolder}).lean().exec();
-        folds =  files.map(async (file)=>{
+        // console.log(files);
+        files =  files.map(async (file)=>{
             if(file.parentFolder==="null"){
                 file.path= "root";
             }else{
-                let f = await Folder.findById(path[i]);
-    
                 let path=[];
+                let f = await Folder.findById(file.parentFolder);
+    
+              
                     path = f.path.split('/');
                     for(let i=1;i<path.length;i++){
                         let f = await Folder.findById(path[i]);
@@ -59,10 +47,15 @@ router.get('/searchfolder',protect, async (req ,res)=>{
                     }
                     file.path=path.join('/');
             }
-
+            const extension = paths.extname(file.name)||null;
+            let filoc = paths.join(__dirname,`../files/${file._id}${extension}`)
+            let stat = fs.statSync(filoc);
+            file.size = bytesconv(stat.size);
+            file.created = file._id.getTimestamp();
+                file.folder=false;
                 return file;
         });
-        folds = await Promise.all(folds)
+        files = await Promise.all(files)
         files = [...folds,...files];
         res.status(200).json({status:"Success",files:files});
 
