@@ -52,7 +52,7 @@ router.get('/searchfolder',protect, async (req ,res)=>{
                 let f = await Folder.findById(path[i]);
     
                 let path=[];
-                    path = file.path.split('/');
+                    path = f.path.split('/');
                     for(let i=1;i<path.length;i++){
                         let f = await Folder.findById(path[i]);
                         path[i] = f.name;
