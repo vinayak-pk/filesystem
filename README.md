@@ -97,7 +97,8 @@ This is a backend file management application which allows users to manage their
       id // id of selected folder i.e to be moved
     }
 
-## Document of Important Technical Decisions - https://docs.google.com/document/d/14rUe4f629v5Hcdw2J1KFK7XrUlyf2fQLkNA1moEMqSs/edit?usp=sharing
+### Document of Important Technical Decisions -
+        Link-https://docs.google.com/document/d/14rUe4f629v5Hcdw2J1KFK7XrUlyf2fQLkNA1moEMqSs/edit?usp=sharing
 
 ### Link to the application 
-   Deployed Link - https://filesystems97.herokuapp.com/
+        Deployed Link - https://filesystems97.herokuapp.com/
