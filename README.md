@@ -8,11 +8,13 @@ This is a backend file management application which allows users to manage their
 - cd ./filesystems2
 - npm install
 - create env file with - 
-     `jwt_secret = // a key for jwt
+     ```
+     jwt_secret = // a key for jwt
      db_pass = //mongoatlas password
      PORT = // port to listen for requests
      keyID = // aws s3 keyid
-     secretAccessKey = //aws s3 access key`
+     secretAccessKey = //aws s3 access key
+     ```
 - npm start
 
 # Using the application and ita APIS- 
