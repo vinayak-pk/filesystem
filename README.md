@@ -7,6 +7,12 @@ This is a backend file management application which allows users to manage their
 - clone the project
 - cd ./filesystems2
 - npm install
+- create env file with - 
+     `jwt_secret = // a key for jwt
+     db_pass = //mongoatlas password
+     PORT = // port to listen for requests
+     keyID = // aws s3 keyid
+     secretAccessKey = //aws s3 access key`
 - npm start
 
 # Using the application and ita APIS- 
@@ -89,3 +95,7 @@ This is a backend file management application which allows users to manage their
       id // id of selected folder i.e to be moved
     }
 
+## Document of Important Technical Decisions - https://docs.google.com/document/d/14rUe4f629v5Hcdw2J1KFK7XrUlyf2fQLkNA1moEMqSs/edit?usp=sharing
+
+### Link to the application 
+   Deployed Link - https://filesystems97.herokuapp.com/
