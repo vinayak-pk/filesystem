@@ -22,7 +22,7 @@ router.post('/create/file',protect, async (req ,res)=>{
         }
         const extension = paths.extname(fname)||null;
 
-        let file = await Files.create({name:fname,userID:id,path:"pending",parentFolder:req.body.parent||"null"})
+        let file = await Files.create({name:fname,userID:id,location:"pending",parentFolder:req.body.parent||"null",size:"0"})
         let loc = `${file._id}${extension}`;
         createFile(loc,content,file._id)
         
@@ -51,7 +51,7 @@ router.post('/create/file',protect, async (req ,res)=>{
         if(fileuser!==userid){
             return res.status(401).json({status:"error",error:"Unauthroized"})
         }
-        await Files.remove({_id:fid});
+        await Files.deleteOne({_id:fid});
         const extension = paths.extname(file.name);
         removeFile(`${fid}${extension}`);
         res.status(200).json({status:"Success"});   
@@ -65,7 +65,7 @@ router.post('/create/file',protect, async (req ,res)=>{
  router.post('/upload',protect,upload.array("files"), async (req ,res)=>{
     try{
         
-        let file = await Files.updateOne({_id:req.fdetails},{path:req.files[0].location})
+        let file = await Files.updateOne({_id:req.fdetails},{location:req.files[0].location,size:req.files[0].size})
 
         res.status(200).json({status:"Success",file:file});  
     }catch(err){

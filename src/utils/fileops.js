@@ -13,7 +13,9 @@ const createFile = (path,fileContent,id)=>{
     };
     s3.upload(params,async function(s3Err, data) {
         if (s3Err) throw s3Err
-        let file = await Files.updateOne(id,{path:data.location})
+        console.log(data)
+        let file = await Files.updateOne({_id:id},{location:data.Location,size:data.size})
+        console.log(id,file)
         console.log(`File uploaded successfully at ${data.Location}`)
     });  
      

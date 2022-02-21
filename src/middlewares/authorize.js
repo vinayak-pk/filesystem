@@ -26,6 +26,10 @@ const protect = async (req, res,next) =>{
     let token = bearerToken.split(" ")[1];
     let payload = await verifyToken(token);
     const user = await User.findById(payload._id).lean().exec();
+    if(!user){
+        return res.status(401).send({"err":"Please provide token properly"})
+
+    }
     req.user = user;
     next()
    }

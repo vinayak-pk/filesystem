@@ -50,9 +50,9 @@ router.get('/searchfolder',protect, async (req ,res)=>{
                     file.path=path.join('/');
             }
             const extension = paths.extname(file.name)||null;
-            let filoc = paths.join(__dirname,`../files/${file._id}${extension}`)
-            let stat = fs.statSync(filoc);
-            file.size = bytesconv(stat.size);
+        
+            file.size = bytesconv(file.size);
+            
             file.created = file._id.getTimestamp();
                 file.folder=false;
                 return file;

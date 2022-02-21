@@ -15,7 +15,13 @@ module.exports = multer({
     },
     key: async function (req, file, cb) {
       const id = req.user._id;
-      let f = await Files.create({name:file.originalname,userID:id,path:"pending",parentFolder:req.body.parent||"null"})
+      let f;
+      try{
+         f = await Files.create({name:file.originalname,userID:id,location:"pending",parentFolder:req.body.parent||"null",size:"0"})
+
+      }catch(err){
+        console.log(err);
+      }
       const extension = path.extname(file.originalname)||null;
       let filename = `${f._id}${extension}`;
       req.fdetails = f._id
