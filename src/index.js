@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-
+const cors = require('cors');
+ app.use(cors());
 const connect = require('./config/db');
 const userController = require('./controllers/user.controller');
 const fileController = require('./controllers/file.controller');
