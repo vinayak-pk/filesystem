@@ -10,16 +10,16 @@ const fs = require('fs');
 // file creation
 router.post('/create/file',protect, async (req ,res)=>{
     try{
-        let {fname,fpath,fid}  = req.body;
+        let {fname}  = req.body;
         var content = req.body.content||""
         if(!fname){
            return res.status(404).json({status:"error",message:"Please send proper file name or path"});
         }
         const id = req.user._id;
      
-        if(fid=="null"){
-            fid=id;
-        }
+        // if(fid=="null"){
+        //     fid=id;
+        // }
         const extension = paths.extname(fname)||null;
 
         let file = await Files.create({name:fname,userID:id,location:"pending",parentFolder:req.body.parent||"null",size:"0"})
@@ -48,7 +48,7 @@ router.post('/create/file',protect, async (req ,res)=>{
         }
         let userid = req.user._id.toString();
         let fileuser = file.userID.toString();
-        if(fileuser!==userid){
+        if(fileuser!==userid){ // authorizing the user for the operation
             return res.status(401).json({status:"error",error:"Unauthroized"})
         }
         await Files.deleteOne({_id:fid});
@@ -81,8 +81,7 @@ router.post('/create/file',protect, async (req ,res)=>{
         let checkFile = await Files.findById(fid);
         let userid = req.user._id.toString();
         let fileuser = checkFile.userID.toString();
-        console.log(userid,fileuser)
-        if(fileuser!==userid){
+        if(fileuser!==userid){ // authorizing the user for the operation
             return res.status(401).json({status:"error",error:"Unauthroized"})
         }
         if(!checkFile){
@@ -91,31 +90,24 @@ router.post('/create/file',protect, async (req ,res)=>{
         }  
         const extension = paths.extname(checkFile.name)||null;
         let key = `${id}${extension}`
-        // let path = paths.join(__dirname,`../files`)
-        // fs.readdirSync(path).forEach((file)=>{
-        //     let fname = file.split('.')[0];
-        //     if(fname===fid){
-        //      let loc = `${port}/${file}`;
-        //      
-        //     }
-        // })
         let output = getFile(key);
         return res.status(200).json({status:"success",path:output.location});  
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
     }
- })
+ });
+ 
 // Moving a file
  router.patch('/move/file/:id',protect, async (req ,res)=>{
     try{
         const id = req.params.id;
-        let {newfold,folder=false} = req.body;
+        let {newfold} = req.body;
         let checkFile = await Files.findById(id);
         let userid = req.user._id.toString();
         let fileuser = checkFile.userID.toString();
         console.log(userid,fileuser)
-        if(fileuser!==userid){
+        if(fileuser!==userid){ // authorizing the user for the operation
             return res.status(401).json({status:"error",error:"Unauthroized"})
         }
         let update =await Files.updateOne({_id:id},{parentFolder:newfold});

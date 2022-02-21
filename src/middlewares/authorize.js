@@ -2,17 +2,17 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const User = require('../models/user.model');
-
+// token verification
 const verifyToken = (token)=>{
     return new Promise((resolve, reject)=>{
-        jwt.verify(token,process.env.jwt_secret,(err,payload)=>{
+        jwt.verify(token,process.env.jwt_secret,(err,payload)=>{ //verifcation
             if(err) return reject(err);
             return resolve(payload);
         })
     })
 }
 
-
+// middleware to check token and authenticate user
 const protect = async (req, res,next) =>{
    try{
      const bearerToken = req.headers.authorization;
@@ -20,9 +20,9 @@ const protect = async (req, res,next) =>{
          return res.status(401).send({"err":"Please provide token"})
      }
      if(!bearerToken.startsWith("Bearer ")){
-        return res.status(401).send({"err":"Please provide token properly"})
+        return res.status(401).send({"err":"Please provide token properly"}) 
 
-     }
+     }   
     let token = bearerToken.split(" ")[1];
     let payload = await verifyToken(token);
     const user = await User.findById(payload._id).lean().exec();
