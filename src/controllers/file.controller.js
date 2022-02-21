@@ -3,9 +3,8 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/authorize');
 const upload = require('../utils/file-upload');
-const port = `${process.env.statichost}/static`;
 const Files = require('../models/file.model');
-const {createFile} = require('../utils/create')
+const {createFile,removeFile,getFile} = require('../utils/fileops')
 const fs = require('fs');
 
 // file creation
@@ -22,9 +21,10 @@ router.post('/create/file',protect, async (req ,res)=>{
             fid=id;
         }
         const extension = paths.extname(fname)||null;
-        let file = await Files.create({name:fname,userID:id,folderID:fid,parentFolder:req.body.parent||"null"})
-        let loc = paths.join(__dirname, `../files/${file._id}${extension}`);
-        await createFile(loc,content)
+
+        let file = await Files.create({name:fname,userID:id,path:"pending",parentFolder:req.body.parent||"null"})
+        let loc = `${file._id}${extension}`;
+        createFile(loc,content,file._id)
         
         res.status(201).json({status:"Success"});
         
@@ -42,8 +42,10 @@ router.post('/create/file',protect, async (req ,res)=>{
  router.delete('/remove/file/:id',protect, async (req ,res)=>{
     try{
         let fid = req.params.id;
-        let loc = paths.join(__dirname, `../files`);
         let file =await Files.findById(fid);
+        if(!file){
+            res.status(404).json({status:"error",messages:"No file found"});
+        }
         let userid = req.user._id.toString();
         let fileuser = file.userID.toString();
         if(fileuser!==userid){
@@ -51,7 +53,7 @@ router.post('/create/file',protect, async (req ,res)=>{
         }
         await Files.remove({_id:fid});
         const extension = paths.extname(file.name);
-        fs.unlinkSync(`${loc}/${fid}${extension}`)
+        removeFile(`${fid}${extension}`);
         res.status(200).json({status:"Success"});   
     }catch(err){
         console.log(err)
@@ -62,7 +64,10 @@ router.post('/create/file',protect, async (req ,res)=>{
 // Uploading files
  router.post('/upload',protect,upload.array("files"), async (req ,res)=>{
     try{
-        res.status(200).json({status:"Success"});  
+        
+        let file = await Files.updateOne({_id:req.fdetails},{path:req.files[0].location})
+
+        res.status(200).json({status:"Success",file:file});  
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
@@ -83,15 +88,19 @@ router.post('/create/file',protect, async (req ,res)=>{
         if(!checkFile){
             return res.status(404).json({status:"error",messages:"No file found"});  
         
-        }
-        let path = paths.join(__dirname,`../files`)
-        fs.readdirSync(path).forEach((file)=>{
-            let fname = file.split('.')[0];
-            if(fname===fid){
-             let loc = `${port}/${file}`;
-             return res.status(200).redirect(loc);  
-            }
-        })
+        }  
+        const extension = paths.extname(checkFile.name)||null;
+        let key = `${id}${extension}`
+        // let path = paths.join(__dirname,`../files`)
+        // fs.readdirSync(path).forEach((file)=>{
+        //     let fname = file.split('.')[0];
+        //     if(fname===fid){
+        //      let loc = `${port}/${file}`;
+        //      
+        //     }
+        // })
+        let output = getFile(key);
+        return res.status(200).json({status:"success",path:output.location});  
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
