@@ -1,6 +1,6 @@
-# Filesystem
+# Files manager
 
-#Description
+# Description
 This is a backend file management application which allows users to manage their files. This is similar to google drive where the user is able to create files and folders. upload files, move or rename files and folders, delete them when needed as well. it is written in JavaScript. This is created using Express, mongoose and AWS.
 
 # How to Install and Run the Project
