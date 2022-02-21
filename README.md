@@ -98,7 +98,7 @@ This is a backend file management application which allows users to manage their
     }
 
 ### Document of Important Technical Decisions -
-        Link-https://docs.google.com/document/d/14rUe4f629v5Hcdw2J1KFK7XrUlyf2fQLkNA1moEMqSs/edit?usp=sharing
+        Link - https://docs.google.com/document/d/14rUe4f629v5Hcdw2J1KFK7XrUlyf2fQLkNA1moEMqSs/edit?usp=sharing
 
 ### Link to the backend application 
         Deployed Link - https://filesystems97.herokuapp.com/
