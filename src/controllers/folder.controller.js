@@ -94,7 +94,7 @@ router.post('/create/folder',protect, async (req ,res)=>{
  
 })
 //deleting an empty folder
-router.post('/remove/folder/:id',protect, async (req ,res)=>{
+router.delete('/remove/folder/:id',protect, async (req ,res)=>{
     try{
        fid=req.params.id;
        const id = req.user._id;

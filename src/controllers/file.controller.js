@@ -39,7 +39,7 @@ router.post('/create/file',protect, async (req ,res)=>{
 
 
 // Deleting a file
- router.post('/remove/file/:id',protect, async (req ,res)=>{
+ router.delete('/remove/file/:id',protect, async (req ,res)=>{
     try{
         let fid = req.params.id;
         let file =await Files.findById(fid);
