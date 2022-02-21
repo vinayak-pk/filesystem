@@ -12,6 +12,8 @@ app.use('/static', express.static(path.join(__dirname, 'files')))
 app.use('/user',userController);
 app.use('/files',fileController);
 app.use('/files',folderController);
+
+
 app.listen(process.env.PORT,()=>{
     connect();
     console.log(`Listening to ${process.env.PORT}`)
