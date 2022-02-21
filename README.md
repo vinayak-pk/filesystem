@@ -32,7 +32,7 @@ This is a backend file management application which allows users to manage their
         "password:" //password
     }
  
-  ## For every api call please add the token as bearer token for authentication after logging in
+  ### For every api call please add the token as bearer token for authentication after logging in
   
   ## Create a folder/Directory 
     path - /files/create/folder 
