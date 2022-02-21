@@ -7,12 +7,13 @@ const connect = require('./config/db');
 const userController = require('./controllers/user.controller');
 const fileController = require('./controllers/file.controller');
 const folderController =  require('./controllers/folder.controller');
+const indexController = require('./controllers/index.controller');
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'files')))
 app.use('/user',userController);
 app.use('/files',fileController);
 app.use('/files',folderController);
-
+app.use('/',indexController)
 
 app.listen(process.env.PORT,()=>{
     connect();
