@@ -10,7 +10,7 @@
  }
 
  router.get('/',async (req, res)=>{
-     let users = await Users.find().lean().exec();
+     let users = await Users.find({},{password:0}).lean().exec();
      res.send(users)
  })
 
@@ -21,15 +21,6 @@
            return res.status(401).send({err:"User already registered"})
         }
         var newUser =await Users.create(req.body);
-       
-        fs.mkdir(path.join(__dirname, `../files/${newUser._id}`),(err) => {
-            if (err) {
-                 console.log(err);
-            }else{
-                console.log('Directory created successfully!');
-
-            }
-        });
         res.status(200).send({status:"Success"});
     }
     catch(err){

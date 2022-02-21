@@ -1,5 +1,5 @@
 const {connect} = require('mongoose');
 require('dotenv').config();
 module.exports = ()=>{
-    return connect(`mongodb://127.0.0.1:27017/filesystem2`)
+    return connect(`mongodb+srv://ghostdb:${process.env.db_pass}@cluster0.rvlac.mongodb.net/filemanagement?retryWrites=true&w=majority`)
 }

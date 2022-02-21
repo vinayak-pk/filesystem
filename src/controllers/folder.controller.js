@@ -6,6 +6,8 @@ const Folder = require('../models/folder.model');
 const Files = require('../models/file.model');
 const bytesconv = require('../utils/bytesconv');
 const fs = require('fs');
+
+// getting folder and files inside a folder
 router.get('/searchfolder',protect, async (req ,res)=>{
     try{
         const id = req.user._id;
@@ -13,11 +15,11 @@ router.get('/searchfolder',protect, async (req ,res)=>{
         if(parentfolder!=="null"){
             let checkfod = await Folder.findOne({userID:id,_id:parentfolder});
             if(!checkfod){
-                return res.status(400).json({status:"error",messages:"Folder/Directory does not exist"});
+                return res.status(404).json({status:"error",messages:"Folder/Directory does not exist"});
     
             } 
         }
-        let folds =await Folder.find({userID:id,parentFolder:parentfolder}).lean().exec();
+        let folds =await Folder.find({userID:id,parentFolder:parentfolder},{userID:0}).lean().exec();
         folds =  folds.map(async (fold)=>{
             let path=[];
                 path = fold.path.split('/');
@@ -30,7 +32,7 @@ router.get('/searchfolder',protect, async (req ,res)=>{
                 return fold;
         });
         folds = await Promise.all(folds)
-        let files = await Files.find({userID:id,parentFolder:parentfolder}).lean().exec();
+        let files = await Files.find({userID:id,parentFolder:parentfolder},{userID:0}).lean().exec();
         // console.log(files);
         files =  files.map(async (file)=>{
             if(file.parentFolder==="null"){
@@ -57,10 +59,7 @@ router.get('/searchfolder',protect, async (req ,res)=>{
         });
         files = await Promise.all(files)
         files = [...folds,...files];
-        res.status(200).json({status:"Success",files:files});
-
-    
-        
+        res.status(200).json({status:"Success",files:files}); 
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
@@ -70,6 +69,7 @@ router.get('/searchfolder',protect, async (req ,res)=>{
    
 })
 
+//folder creation
 router.post('/create/folder',protect, async (req ,res)=>{
     try{
         let {fname}  = req.body;
@@ -86,7 +86,7 @@ router.post('/create/folder',protect, async (req ,res)=>{
        let loc = `${fpath}/${folder.id}`
       
        folder = await Folder.findByIdAndUpdate(folder.id,{path:loc})
-        res.status(200).json({status:"Success"});
+        res.status(201).json({status:"Success"});
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
@@ -94,7 +94,7 @@ router.post('/create/folder',protect, async (req ,res)=>{
     }
  
 })
-
+//deleting an empty folder
 router.delete('/remove/folder/:id',protect, async (req ,res)=>{
     try{
        fid=req.params.id;
@@ -103,7 +103,7 @@ router.delete('/remove/folder/:id',protect, async (req ,res)=>{
        let files = await Files.find({userID:id,parentFolder:fid});
        files= [...files,...folds];
        if(files.length>0){
-           return res.status("400").json({status:"error",error:"Folder is not empty"})
+           return res.status(403).json({status:"error",error:"Folder is not empty"})
        }
         files= await Folder.deleteOne({userID:id,id:fid});
         console.log(files)
@@ -114,7 +114,7 @@ router.delete('/remove/folder/:id',protect, async (req ,res)=>{
    }
    
 });
-
+//renaming folder or file
 router.patch('/rename/:id',protect, async (req ,res)=>{
     try{
         const id = req.params.id;
@@ -122,9 +122,14 @@ router.patch('/rename/:id',protect, async (req ,res)=>{
         let update;
         if(folder){
             let fold = await Folder.findById(id);
-            let mpath = fold.path.split('/');
-            [mpath[mpath.length-1]]=[newname];
-             update = await Folder.updateOne({_id:id},{name:newname,path:mpath});
+            let userid = req.user._id.toString();
+            let folduser = fold.userID.toString();
+            console.log(userid,folduser)
+            if(folduser!==userid){
+                return res.status(401).json({status:"error",error:"Unauthroized"})
+            }
+         
+             update = await Folder.updateOne({_id:id},{name:newname});
         }else{
              update =await Files.updateOne({_id:id},{name:newname});
         }
@@ -135,6 +140,7 @@ router.patch('/rename/:id',protect, async (req ,res)=>{
     }
  })
 
+//moving a folder
  router.patch('/move/folder/:id',protect, async (req ,res)=>{
     try{
         const id = req.params.id;
@@ -142,14 +148,22 @@ router.patch('/rename/:id',protect, async (req ,res)=>{
         let {newfold} = req.body;
         if(newfold==="null"){
             let fold =await Folder.findById(id);
-            let path = `${userID}/${fold.name}`
+            if(req.user._id.toString()!==fold.userID.toString()){
+                return res.status(401).json({status:"error",error:"Unauthroized"})
+
+            }
+            let path = `root/${fold._id}`
             let update =await Folder.updateOne({_id:id},{parentFolder:"null",path:path});
            return res.status(200).json({status:"Success",update});   
         } 
         let fold = await Folder.findById(newfold);
+        if(req.user._id.toString()!==fold.userID.toString()){
+            return res.status(401).json({status:"error",error:"Unauthroized"})
+
+        }
         let update =await Folder.updateOne({_id:id},{parentFolder:newfold,path:fold.path});
         
-        res.status(200).json({status:"Success",update});   
+        res.status(201).json({status:"Success",update});   
     }catch(err){
         console.log(err)
         res.status(404).json({status:"error",messages:"Something went wrong. Please try again"});
