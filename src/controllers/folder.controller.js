@@ -8,7 +8,7 @@ const bytesconv = require('../utils/bytesconv');
 const fs = require('fs');
 
 // getting folder and files inside a folder
-router.get('/searchfolder',protect, async (req ,res)=>{
+router.get('/changedir',protect, async (req ,res)=>{
     try{
         const id = req.user._id;
         let parentfolder= req.body.parent;
