@@ -49,10 +49,11 @@ This is a backend file management application which allows users to manage their
     }
     
  ## Change folder/directory
-    path - /files/searchfolder
+    path - /files/changedir
     body  {
         "parent": // id of the selected folder
     }
+    
  ## Rename file/folder
     path - /files/rename/:id
     body  {
@@ -62,6 +63,7 @@ This is a backend file management application which allows users to manage their
     params:{
       id // id of selected folder
     }
+    
  ## Move folder/directory
     path - /files/move/folder/:id 
     body  {
@@ -70,6 +72,7 @@ This is a backend file management application which allows users to manage their
      params:{
       id // id of selected folder i.e to be moved
     }
+    
  ## Moving a file 
     path - /files/move/file/:id 
     body  {
@@ -91,6 +94,7 @@ This is a backend file management application which allows users to manage their
      params:{
       id // id of selected folder i.e to be moved
     }
+    
 ## Delete file
      path - /files/remove/file/:id 
      params:{
