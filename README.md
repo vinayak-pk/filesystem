@@ -44,7 +44,8 @@ This is a backend file management application which allows users to manage their
  ## Create a file (post request)
     path - /files/create/file
     body  {
-        "fname": //folder name
+        "fname": //file name,
+        "content":// file content
          "parent": // parent folder id
     }
     
