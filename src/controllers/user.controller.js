@@ -43,7 +43,7 @@
         }
         let token = newToken(user);
 
-        res.status(201).json({status:"success",token})
+        res.status(201).json({status:"success",token,user:user.name})
     }
     catch(err){
         res.status(200).json({status:"Error",message:"Something went wrong"})
