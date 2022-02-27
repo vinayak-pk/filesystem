@@ -8,10 +8,10 @@ const bytesconv = require('../utils/bytesconv');
 const fs = require('fs');
 
 // getting folder and files inside a folder
-router.get('/changedir',protect, async (req ,res)=>{
+router.get('/changedir/:parent',protect, async (req ,res)=>{
     try{
         const id = req.user._id;
-        let parentfolder= req.body.parent;
+        let parentfolder= req.params.parent;
         if(parentfolder!=="null"){   
             let checkfod = await Folder.findOne({userID:id,_id:parentfolder});  // checking if file exists
             if(!checkfod){
