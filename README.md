@@ -18,14 +18,14 @@ This is a backend file management application which allows users to manage their
 - npm start
 
 # Using the application and ita APIS- 
-  ## Adding a new user 
+  ## Adding a new user (post request)
     path - user/register
     body  {
         "name": //user name,
         "email": // email id,
         "password:" //password
     }
-  ## Login
+  ## Login (post request)
     path - user/login
     body  {
         "email": // email id,
@@ -34,27 +34,27 @@ This is a backend file management application which allows users to manage their
  
   ### For every api call please add the token as bearer token for authentication after logging in
   
-  ## Create a folder/Directory 
+  ## Create a folder/Directory (post request)
     path - /files/create/folder 
     body  {
         "fname": //folder name
         "parent": // parent folder id
     }
   
- ## Create a file 
+ ## Create a file (post request)
     path - /files/create/file
     body  {
         "fname": //folder name
          "parent": // parent folder id
     }
     
- ## Change folder/directory
+ ## Change folder/directory (get request)
     path - /files/changedir
-    body  {
+    params  {
         "parent": // id of the selected folder
     }
     
- ## Rename file/folder
+ ## Rename file/folder (post request)
     path - /files/rename/:id
     body  {
         "newname": // New name,
@@ -64,7 +64,7 @@ This is a backend file management application which allows users to manage their
       id // id of selected folder
     }
     
- ## Move folder/directory
+ ## Move folder/directory (patch request)
     path - /files/move/folder/:id 
     body  {
         "newfold": // id of the new folder 
@@ -73,7 +73,7 @@ This is a backend file management application which allows users to manage their
       id // id of selected folder i.e to be moved
     }
     
- ## Moving a file 
+ ## Moving a file  (patch request)
     path - /files/move/file/:id 
     body  {
         "newfold": // id of the new folder 
@@ -82,20 +82,20 @@ This is a backend file management application which allows users to manage their
       id // id of selected folder i.e to be moved
     }
     
- ## File upload 
+ ## File upload (post request)
     path - /files/upload 
     form-data  {
         "parent": // id of the new folder 
         "files": // file needed to be uploaded
     }
     
- ## Delete folder
+ ## Delete folder (delete request)
     path - /files/remove/folder/:id 
      params:{
       id // id of selected folder i.e to be moved
     }
     
-## Delete file
+## Delete file (delete request)
      path - /files/remove/file/:id 
      params:{
       id // id of selected folder i.e to be moved
